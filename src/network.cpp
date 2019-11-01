@@ -131,33 +131,22 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
 }
 std::pair<size_t, double> Network::degree(const size_t& n) const{
 	std::vector<std::pair<size_t, double>> neighbors_neurons(neighbors(n));
-	double summ;
+	double summ(0);
 	for(auto neighbor : neighbors_neurons){
 		summ+=neighbor.second;
 	}
 	return {neighbors_neurons.size(),summ};
 }
-std::vector< std::pair< size_t, double > > 	Network::neighbors (const size_t & indice) const
-{
+std::vector< std::pair< size_t, double > > 	Network::neighbors (const size_t & indice) const{
 	std::vector< std::pair< size_t, double > > connected_neurons;
 	for(std::map<std::pair<size_t,size_t>,double>::const_iterator i=links.lower_bound({indice,0}); i!=links.end() and ((i->first).first)==indice; ++i){
 		std::pair<size_t, double> insert_neurons ((i->first).second, i->second);
 		connected_neurons.push_back(insert_neurons);
-		/*
-		if(i->first.first==indice)
-		{
-			connected_neurons.push_back({i->first.second,i->second});
-		}
-		else if(i->first.second==indice)
-		{
-			connected_neurons.push_back({i->first.first,i->second});
-		}*/
 	}
 	return connected_neurons;
 }
 
-std::set<size_t> Network::step(const std::vector<double>& thalamus_intens)
-{
+std::set<size_t> Network::step(const std::vector<double>& thalamus_intens){
 	std::set<size_t> firing_neurons;
 	for(size_t i(0);i<neurons.size();++i){ //i est un neuron
 		double intensity(0);
@@ -168,7 +157,7 @@ std::set<size_t> Network::step(const std::vector<double>& thalamus_intens)
 			intensity+=thalamus_intens[i];
 		}
 		std::vector< std::pair< size_t, double > > linked_neurons (neighbors(i));
-		for(size_t n(0); n<linked_neurons.size();++n){ //n est un neuron connecté (neighbor)
+		for(size_t n(0); n<linked_neurons.size();++n){ 
 			if (neurons[linked_neurons[n].first].firing()){
 				firing_neurons.insert(n);
 				intensity+=linked_neurons[n].second;
